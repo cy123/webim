@@ -147,7 +147,7 @@
           if (!session_id) {
             session_id = ''
           }
-          this.socket = new WebSocket("ws://localhost:9501?session_id="+session_id)
+          this.socket = new WebSocket("ws://catteacher.cn:9501?session_id="+session_id)
           this.socket.onopen = function(ev) {
             console.log('websocket is open now');
           }
