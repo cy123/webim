@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+  <style type="text/css">
+    .container {
+      width: 600px;
+      height: 500px;
+      border: 2px solid silver;
+
+    }
+    ul {
+      margin-top: 0;
+      margin-bottom: 10px;
+      padding: 0;
+    }
+    .container ul li {
+      position: relative;
+      font-size: 0;
+      margin-bottom: 10px;
+      padding-left: 60px;
+      min-height: 68px;
+    }
+    .layim-chat-user {
+      position: absolute;
+      left: 3px;
+    }
+    .layim-chat-user img {
+      width: 40px;
+      height: 40px;
+      border-radius: 100%;
+    }
+    .layim-chat-user cite {
+      position: absolute;
+      left: 60px;
+      top: -2px;
+      width: 500px;
+      line-height: 24px;
+      font-size: 12px;
+      white-space: nowrap;
+      color: #999;
+      text-align: left;
+      font-style: normal;
+    }
+    .layim-chat-user cite i {
+      padding-left: 15px;
+      font-style: normal;
+    }
+    .layim-chat-text, .layim-chat-user {
+      display: inline-block;
+      vertical-align: top;
+      font-size: 14px;
+    }
+    .layim-chat-text {
+      position: relative;
+      line-height: 22px;
+      margin-top: 25px;
+      padding: 8px 15px;
+      background-color: #e2e2e2;
+      border-radius: 3px;
+      color: #333;
+      word-break: break-all;
+    }
+    .layim-chat-text::after {
+      content: '';
+      position: absolute;
+      left: -10px;
+      top: 13px;
+      width: 0;
+      height: 0;
+      border-style: solid dashed dashed;
+      border-color: #e2e2e2 transparent transparent;
+      overflow: hidden;
+      border-width: 10px;
+    }
+     .container ul .layim-chat-mine {
+      text-align: right;
+      padding-left: 0;
+      padding-right: 60px;
+    }
+    .layim-chat-mine .layim-chat-user {
+      left: auto;
+      right: 3px;
+    }
+    .layim-chat-mine .layim-chat-text {
+      margin-left: 0;
+      text-align: left;
+      background-color: #5FB878;
+      color: #fff;
+    }
+    .layim-chat-mine .layim-chat-text:after {
+      left: auto;
+      right: -10px;
+      border-top-color: #5FB878;
+    }
+    .layim-chat-mine .layim-chat-user cite {
+      left: auto;
+      right: 60px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+<ul>
+  <li>
+    <div class="layim-chat-user">
+      <img src="https://thirdqq.qlogo.cn/qqapp/101343857/3220CD35203915DB77A1C0AEDD731EA2/100" alt="">
+      <cite>寒川-2019<i>2019-01-23 14:10:07</i>
+      </cite>
+    </div>
+    <div class="layim-chat-text">你在做什么？</div>
+  </li>
+  <li class="layim-chat-mine">
+    <div class="layim-chat-user">
+      <img src="https://thirdqq.qlogo.cn/qqapp/101343857/3220CD35203915DB77A1C0AEDD731EA2/100" alt="">
+      <cite>寒川-2019<i>2019-01-23 14:10:07</i>
+      </cite>
+    </div>
+    <div class="layim-chat-text">在玩呢在玩呢在玩呢在玩呢在玩呢在玩呢在玩呢在玩呢在玩呢在玩呢在玩呢在玩呢在玩呢在玩呢在玩呢在玩呢在玩呢在玩呢在玩呢在玩呢在玩呢</div>
+  </li>
+</ul>
+</div>
+</body>
+</html>

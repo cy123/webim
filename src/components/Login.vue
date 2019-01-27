@@ -1,16 +1,16 @@
 <template>
-    <div v-if="this.isshow">
+    <div>
       <div class="login-panel-wraper">
         <div class="login-panel">
           <div class="title">web qq</div>
           <div class="input-wraper">
-            账号：<input id="account" type="text">
+            账号：<input v-model="qq" type="text">
           </div>
           <div class="input-wraper">
-            密码：<input id="pwd" type="password">
+            密码：<input v-model="pwd" type="password">
           </div>
-          <router-link to="/register"><button class="login-button">注册</button></router-link>
-            <button @click="login" class="login-button">登录</button>
+          <button @click="register" class="login-button">注册</button>
+          <button @click="login" class="login-button">登录</button>
         </div>
       </div>
     </div>
@@ -19,40 +19,35 @@
 <script>
     export default {
       name: "Login",
-      props: [
-        'socket'
-      ],
       data() {
         return {
-          isshow: true
+          pwd: '',
+          qq: ''
         }
       },
       methods: {
           login: function () {
-            console.log(this.$cookies.get('session_id'));
-            let account = document.getElementById('account').value;
-            let pwd = document.getElementById('pwd').value;
+
+            if (!this.qq){
+              alert('qq号不能为空');
+              return false;
+            }
+            if (!this.pwd){
+              alert('密码不能为空');
+              return false;
+            }
             let data = {
-              qq: account,
-              pwd: pwd,
+              qq: this.qq,
+              pwd: this.pwd,
               message_type: 3
             };
-            //登录操作
-            let _this = this
-            this.socket.onmessage = function(ev) {
-              let data = JSON.parse(ev.data);
-              // alert(data.msg);
-              console.log(data);
-              if (data.code == 0) {
-                _this.isshow = false
-                _this.$cookies.set('session_id', data.session_id, '0');
-                _this.$cookies.set('qq', account, '0');
-                _this.$emit('loggedsuccess')
-              }
-
-            }
-            this.socket.send(JSON.stringify(data));
-          }
+            console.log(111);
+            this.$emit('userlogin', data);
+          },
+        register: function () {
+            console.log(1234)
+          this.$emit('register', '1234');
+        }
       }
     }
 </script>
@@ -74,14 +69,25 @@
     height: 50px;
     line-height: 50px;
   }
+  .input-wraper input {
+    height: 30px;
+    width: 200px;
+    border: 2px solid silver;
+    border-radius: 5px;
+  }
   .login-panel {
     margin: auto;
     height: 400px;
     width: 600px;
-    border: 1px solid rebeccapurple;
+    border: 1px solid silver;
+    border-radius: 5px  ;
     text-align: center;
   }
   .login-button {
+    padding: 6px 20px;
     margin-left: 40px;
+    background: #5FB878;
+    color: white;
+    border-radius: 5px;
   }
 </style>
