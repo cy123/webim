@@ -75,7 +75,7 @@
           nickname: this.nickname,
           avatar: this.face_url
         };
-        axios.post('http://catteacher.cn:9501/users/register', qs.stringify(data))
+        axios.post('http://localhost:9501/users/register', qs.stringify(data))
           .then(function (response) {
             console.log(response);
             let data = response.data;

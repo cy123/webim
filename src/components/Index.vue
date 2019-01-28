@@ -44,7 +44,10 @@
           </div>
           <div v-show="groupshow">
             <ul class="conent-list">
-              <li class="friend qqgroup">webqq在线用户</li>
+              <li v-for="group of groups" @click="add_group_panel" class="friend qqgroup">
+                {{group.group_name}}
+                <div class="friend_unread">{{online_unread}}</div>
+              </li>
             </ul>
           </div>
           <div v-show="messageshow">
@@ -135,9 +138,16 @@
           chat_pannel_show: false,
           current_qq: '',
           unread_num: '',
+          online_unread: '',
           unread_list: [],
           chat_unread: [],
-          user: {}
+          user: {},
+          groups: [
+            {
+              group_avatar: '',
+              group_name: 'webqq在线用户'
+            }
+          ]
         }
 
       },
@@ -147,7 +157,7 @@
           if (!session_id) {
             session_id = ''
           }
-          this.socket = new WebSocket("ws://catteacher.cn:9501?session_id="+session_id)
+          this.socket = new WebSocket("ws://localhost:9501?session_id="+session_id)
           this.socket.onopen = function(ev) {
             console.log('websocket is open now');
           }
@@ -161,7 +171,7 @@
               return false;
             }
             // 如果是聊天
-            if (data.chat_type == 1) {
+            if (data.message_type == 1) {
 
               // 判断是否打开当前聊天窗口
               if (_this.current_qq != data.to_qq) {
@@ -171,17 +181,28 @@
                 _this.chat_unread[data.to_qq]++;
                 // _this.unread_num++;
               }
+              let img = '';
+              let nickname = ''
+              if (data.chat_type == 2) {
+                if (_this.current_qq != 'all') {
+                  _this.online_unread ++;
+                }
+                img = '/static/img/' + data.userinfo.avatar + '.jpg';
+                 nickname = data.userinfo.nickname;
+              } else  {
+                img =  '/static/img/' + _this.friends[data.to_qq].avatar + '.jpg';
+                nickname = _this.friends[data.to_qq].nickname;
+              }
               let item = {
-                img: '/static/img/' + _this.friends[data.to_qq].avatar + '.jpg',
+                img: img,
                 datetime: data.datetime,
-                nickname: _this.friends[data.to_qq].nickname,
+                nickname: nickname,
                 message: data.msg,
                 class: '',
                 class_face_item_right: 'chat-face-item-right',
                 class_chat_list_ul_li_right: 'chat-mine'
               };
-              let qq = _this.$cookies.get('qq');
-              console.log(_this.chatlist);
+
               if (!_this.chatlist[data.to_qq]) {
                 _this.chatlist[data.to_qq] = [];
               }
@@ -192,7 +213,7 @@
               }
 
             }
-            // 登录番返回
+            // 登录番返回，
             if(data.message_type == 3) {
               _this.$cookies.set('session_id', data.session_id, '0');
               _this.$cookies.set('user', data.user, '0');
@@ -209,16 +230,19 @@
             // 接收服务端发送过来的好友列表
             if(data.message_type == 4) {
               _this.friends = data.friends
+              _this.$forceUpdate();
             }
 
             // 添加好友
             if (data.message_type == 5) {
-               alert(data.msg);
+
                if (data.code == 0) {
                  this.addfriendsshow = false;
                }
 
                // 重新刷新好友列表
+              _this.friends = data.friends
+              _this.$forceUpdate();
             }
             // 设置消息已读
             if (data.message_type == 6) {
@@ -230,19 +254,29 @@
         send: function (qq, nickname) {
           console.log(qq,nickname);
           let user = this.$cookies.get('user');
+          // 未登录，不发送消息
+          if (!user) {
+            this.unlogin_send(qq);
+            return;
+          }
           let data = {
             to_qq: qq,
-            user_qq: this.$cookies.get('user').qq,
+            user_qq: user ? user.qq : '',
             message_type: 1,
             chat_type:1,
             msg: this.message
           };
-          console.log(data);
+          // 发送所有在线用户
+          if (qq == 'all') {
+            // 群聊
+            data.chat_type = 2;
+          }
+
           this.socket.send(JSON.stringify(data));
           let itme =   {
-              img: '/static/img/'+this.user.avatar+'.jpg',
+              img: '/static/img/'+ user.avatar+'.jpg',
               datetime: '2019-10',
-              nickname: user.nickname,
+              nickname: user ? user.nickname: 'qq',
               message: this.message,
               class: 'float-right',
               class_face_item_right: '',
@@ -257,9 +291,29 @@
           this.message = ''
           this.scrollToBottom();
         },
+        unlogin_send: function (qq) {
+          let itme =   {
+            img: '/static/img/qq.jpeg',
+            datetime: '2019-10',
+            nickname: '登录后聊天',
+            message: this.message,
+            class: 'float-right',
+            class_face_item_right: '',
+            class_chat_list_ul_li_right: ''
+          };
+          if (! this.chatlist[qq]) {
+            this.chatlist[qq] = [];
+          }
+
+          this.chatlist[qq].push(itme);
+
+          this.message = ''
+          this.scrollToBottom();
+        },
         login: function () {
           this.loginshow = !this.loginshow;
           this.registershow = false;
+          this.current_qq='';
         },
         userlogin: function (data) {
           this.socket.send(JSON.stringify(data));
@@ -267,6 +321,7 @@
         logout: function () {
           this.$cookies.remove('session_id');
           this.$cookies.remove('user');
+          this.user = '';
           this.islogout = false;
           this.islogin = true;
           this.friends = [];
@@ -303,7 +358,8 @@
           let data = {
             user_qq: this.$cookies.get('user').qq,
             friend_qq: this.friend_qq,
-            message_type: 5
+            message_type: 5,
+            session_id: this.$cookies.get('session_id')
           };
           this.socket.send(JSON.stringify(data))
         },
@@ -384,6 +440,24 @@
             message_type: 6
           };
           this.socket.send(JSON.stringify(data))
+        },
+        add_group_panel: function () {
+          this.online_unread = ''
+          // 判断是否已经添加pannel
+          if (this.chatpanelqq.indexOf('all') === -1) {
+
+            let alluser = {
+              qq: 'all',
+              nickname: 'webqq在线用户'
+            };
+
+            this.chatpanel.push(alluser);
+            this.chatpanelqq.push('all');
+          }
+
+          // 显示
+          this.current_qq = 'all';
+
         }
       },
       mounted() {
@@ -554,7 +628,7 @@
   }
   .chat-panel {
     position: absolute;
-    left: 100px;
+    right: 500px;
     top: 50px;
     border: 1px solid gainsboro;
     border-radius: 3px;
@@ -652,10 +726,11 @@
   }
   .friend_unread {
     position: absolute;
+    font-size: 13px;
     right: 10px;
     top: 10px;
-    width: 20px;
-    line-height: 20px;
+    width: 15px;
+    line-height: 15px;
     background: red;
     color: white;
     border-radius: 3px;
