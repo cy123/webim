@@ -44,9 +44,14 @@
           </div>
           <div v-show="groupshow">
             <ul class="conent-list">
-              <li v-for="group of groups" @click="add_group_panel" class="friend qqgroup">
-                {{group.group_name}}
+              <li class="friend qqgroup" @click="add_group_panel">
+                webqq在线用户
+                <span style="color: #5fb878" >({{online_user_num}})</span>
                 <div class="friend_unread">{{online_unread}}</div>
+              </li>
+              <li v-for="group of groups"  class="friend qqgroup">
+                {{group.group_name}}
+
               </li>
             </ul>
           </div>
@@ -142,12 +147,8 @@
           unread_list: [],
           chat_unread: [],
           user: {},
-          groups: [
-            {
-              group_avatar: '',
-              group_name: 'webqq在线用户'
-            }
-          ]
+          groups: [],
+          online_user_num: '' // 当前在线人数
         }
 
       },
@@ -157,7 +158,7 @@
           if (!session_id) {
             session_id = ''
           }
-          this.socket = new WebSocket("ws://localhost:9501?session_id="+session_id)
+          this.socket = new WebSocket("ws://catteacher.cn:9501?session_id="+session_id)
           this.socket.onopen = function(ev) {
             console.log('websocket is open now');
           }
@@ -229,7 +230,8 @@
 
             // 接收服务端发送过来的好友列表
             if(data.message_type == 4) {
-              _this.friends = data.friends
+              _this.friends = data.friends;
+              _this.online_user_num = data.unline_user_num;
               _this.$forceUpdate();
             }
 
@@ -247,6 +249,10 @@
             // 设置消息已读
             if (data.message_type == 6) {
 
+            }
+
+            if (data.message_type === 7) {
+              _this.online_user_num = data.unline_user_num;
             }
 
           }
