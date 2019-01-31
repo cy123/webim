@@ -7,6 +7,7 @@
       <Register v-show="registershow" @registerclose="registerclose" ></Register>
 
       <div v-show="addfriendsshow" class="addfriends">
+        <div class="close" @click="addfriends_close()"></div>
         输入好友qq号：
         <input v-model="friend_qq" type="text">
         <button @click="doaddfriend" style="cursor: pointer;">提交</button>
@@ -34,7 +35,7 @@
           </div>
         </div>
         <div class="panel-content">
-          <div class="friends" v-show="friendsshow">
+          <div class="friends" v-show="panelshow==='friends'">
             <ul class="conent-list">
               <li v-for="friend of this.friends" class="friend" @click="addtopanel(friend)">
                 <img class="face" :src="'/static/img/'+ friend.avatar +'.jpg'" alt="">{{friend.nickname}}
@@ -42,9 +43,10 @@
               </li>
             </ul>
           </div>
-          <div v-show="groupshow">
+          <div v-show="panelshow==='group'">
             <ul class="conent-list">
               <li class="friend qqgroup" @click="add_group_panel">
+                <img class="face" src="/static/img/group.jpg" alt="">
                 webqq在线用户
                 <span style="color: #5fb878" >({{online_user_num}})</span>
                 <div class="friend_unread">{{online_unread}}</div>
@@ -55,7 +57,7 @@
               </li>
             </ul>
           </div>
-          <div v-show="messageshow">
+          <div v-show="panelshow==='message'">
            <ul>
              <li v-for="data of unread_list">
 
@@ -64,7 +66,7 @@
           </div>
         </div>
         <div class="footer">
-          <span @click="addfriends" class="addfriends-button">添加好友</span>
+          <div @click="addfriends" class="addfriends-button">添加好友</div>
         </div>
       </div>
 
@@ -75,16 +77,32 @@
         <div style="display: flex">
           <div class="chat-left">
             <ul>
-              <li>
-                <img class="face" src="/static/img/1.jpg" alt=""> 大花猫
+              <li
+                v-for="item of pannel_side"
+                :class="{pannel_side_list:item.qq === current_qq}"
+                @mouseenter="showclose(item.qq)"
+                @mouseleave="closeshow"
+                @click="switch_chat_side(item.qq)"
+              >
+                <div class="pannel-side-close"
+                     v-show="panel_close_show==item.qq"
+                     @click="pannel_side_close(item.qq)"
+                     @click.stop
+                >
+
+                </div>
+                <img class="face" :src="'/static/img/'+item.avatar+'.jpg'" alt=""> {{item.nickname}}
               </li>
             </ul>
           </div>
           <div class="chat-right">
-            <div class="chat-list" id="chatmessage">
-              <ul>
-                <li v-for="item of chatlist[user.qq]" :class="item.class_chat_list_ul_li_right">
-                  <div class="chat-face-item" :class="item.class_face_item_right">
+            <div class="chat-list" >
+              <ul :id="'abc' + user.qq " class="chatbox">
+                <li
+                  v-for="item of chatlist[user.qq]"
+                  :class="item.class"
+                >
+                  <div class="chat-face-item">
                     <img  class="chat-face" :src="item.img" alt="">
                     <cite>
                       {{item.datetime}}
@@ -98,7 +116,16 @@
               </ul>
             </div>
             <div class="chat-input">
-              <textarea v-model="message" name="" id="" cols="50" rows="5"></textarea>
+              <textarea
+                v-model="message[user.qq]"
+                @keyup.ctrl.enter="send(user.qq, user.nickname)"
+                name=""
+                autofocus="autofocus"
+                v-focus="chatfocus"
+                cols="50"
+                rows="5">
+
+              </textarea>
               <div @click="send(user.qq, user.nickname)" class="to-message">发送</div>
             </div>
           </div>
@@ -110,6 +137,7 @@
 <script>
   import Login from './Login';
   import Register from './Register';
+  import chatConfig from '@/assets/js/chatConfig.js'
     export default {
       name: "Index",
       components: {
@@ -124,7 +152,7 @@
           },
           chatpanel: [],
           chatpanelqq: [],
-          message: '',
+          message: [],
           loginshow: false,
           registershow: false,
           addfriendsshow: false,
@@ -136,9 +164,7 @@
           friend_qq: '',
           nickname: '',
           avatar: '/static/img/qq.jpeg',
-          friendsshow: true,
-          groupshow: false,
-          messageshow: false,
+          panelshow: 'friends',
           header_active: 'friends',
           chat_pannel_show: false,
           current_qq: '',
@@ -148,7 +174,11 @@
           chat_unread: [],
           user: {},
           groups: [],
-          online_user_num: '' // 当前在线人数
+          online_user_num: '', // 当前在线人数
+          chatfocus: true,
+          pannel_side: [], // 聊天对话框左侧
+          panel_close_show: '',
+          pannel_side_qq: []
         }
 
       },
@@ -158,10 +188,11 @@
           if (!session_id) {
             session_id = ''
           }
-          this.socket = new WebSocket("ws://catteacher.cn:9501?session_id="+session_id)
+          this.socket = new WebSocket("ws://localhost:9501?session_id="+session_id)
           this.socket.onopen = function(ev) {
             console.log('websocket is open now');
-          }
+          };
+
           let _this = this;
           this.socket.onmessage = function(ev) {
 
@@ -171,63 +202,31 @@
               alert(data.msg);
               return false;
             }
-            // 如果是聊天
-            if (data.message_type == 1) {
-
-              // 判断是否打开当前聊天窗口
-              if (_this.current_qq != data.to_qq) {
-                if (!_this.chat_unread[data.to_qq]) {
-                  _this.chat_unread[data.to_qq] = 0
-                }
-                _this.chat_unread[data.to_qq]++;
-                // _this.unread_num++;
-              }
-              let img = '';
-              let nickname = ''
-              if (data.chat_type == 2) {
-                if (_this.current_qq != 'all') {
-                  _this.online_unread ++;
-                }
-                img = '/static/img/' + data.userinfo.avatar + '.jpg';
-                 nickname = data.userinfo.nickname;
-              } else  {
-                img =  '/static/img/' + _this.friends[data.to_qq].avatar + '.jpg';
-                nickname = _this.friends[data.to_qq].nickname;
-              }
-              let item = {
-                img: img,
-                datetime: data.datetime,
-                nickname: nickname,
-                message: data.msg,
-                class: '',
-                class_face_item_right: 'chat-face-item-right',
-                class_chat_list_ul_li_right: 'chat-mine'
-              };
-
-              if (!_this.chatlist[data.to_qq]) {
-                _this.chatlist[data.to_qq] = [];
-              }
-              _this.chatlist[data.to_qq].push(item)
-              _this.$forceUpdate();
-              if (_this.current_qq) {
-                _this.scrollToBottom();
-              }
-
+            data = data.data;
+            switch (data.message_type) {
+              // 处理聊天相关
+              case chatConfig.MESSAGE_TYPE_CHAT:
+                _this.handleChat(data);
+                break;
+              // case chatConfig.MESSAGE_TYPE_REGISTER:
+              //   break;
+                    // 处理登录
+              case chatConfig.MESSAGE_TYPE_LOGIN:
+                _this.handleLogin(data);
+                break;
+              // case chatConfig.MESSAGE_TYPE_FRIENDS:
+              //   break;
+                    // 添加好友
+              case chatConfig.MESSAGE_TYPE_ADD_FRIENDS:
+                _this.handleAddFriends(data);
+                break;
+              // case chatConfig.MESSAGE_TYPE_READ:
+              //   break;
+              // case chatConfig.MESSAGE_TYPE_ONLINE_USER_NUM:
+              //   break;
+              // default:
+              //   break;
             }
-            // 登录番返回，
-            if(data.message_type == 3) {
-              _this.$cookies.set('session_id', data.session_id, '0');
-              _this.$cookies.set('user', data.user, '0');
-              _this.nickname = data.user.nickname
-              _this.loginshow = !_this.loginshow;
-              _this.islogin = false;
-              _this.friends = data.friends;
-              _this.avatar = '/static/img/' + data.user.avatar + '.jpg'
-              _this.dealUnread(data.unread);
-              _this.check_login();
-              _this.$forceUpdate();
-            }
-
             // 接收服务端发送过来的好友列表
             if(data.message_type == 4) {
               _this.friends = data.friends;
@@ -235,17 +234,6 @@
               _this.$forceUpdate();
             }
 
-            // 添加好友
-            if (data.message_type == 5) {
-
-               if (data.code == 0) {
-                 this.addfriendsshow = false;
-               }
-
-               // 重新刷新好友列表
-              _this.friends = data.friends
-              _this.$forceUpdate();
-            }
             // 设置消息已读
             if (data.message_type == 6) {
 
@@ -255,10 +243,19 @@
               _this.online_user_num = data.unline_user_num;
             }
 
+            if (data.message_type === 8) {
+              _this.friends = data.friends
+              _this.online_user_num = data.unline_user_num;
+            }
+
           }
         },
         send: function (qq, nickname) {
-          console.log(qq,nickname);
+          // 没有消息直接返回
+          if(!this.message[qq]) {
+            this.chatfocus= true;
+            return;
+          }
           let user = this.$cookies.get('user');
           // 未登录，不发送消息
           if (!user) {
@@ -270,7 +267,7 @@
             user_qq: user ? user.qq : '',
             message_type: 1,
             chat_type:1,
-            msg: this.message
+            msg: this.message[qq]
           };
           // 发送所有在线用户
           if (qq == 'all') {
@@ -283,10 +280,8 @@
               img: '/static/img/'+ user.avatar+'.jpg',
               datetime: '2019-10',
               nickname: user ? user.nickname: 'qq',
-              message: this.message,
-              class: 'float-right',
-              class_face_item_right: '',
-              class_chat_list_ul_li_right: ''
+              message: this.message[qq],
+              class: 'chat-mine'
           };
           if (! this.chatlist[qq]) {
             this.chatlist[qq] = [];
@@ -294,7 +289,8 @@
 
           this.chatlist[qq].push(itme);
 
-          this.message = ''
+          this.message[qq] = ''
+          this.$forceUpdate();
           this.scrollToBottom();
         },
         unlogin_send: function (qq) {
@@ -325,6 +321,12 @@
           this.socket.send(JSON.stringify(data));
         },
         logout: function () {
+          let data = {
+            message_type: chatConfig.MESSAGE_TYPE_LOGOUT,
+            qq:this.user.qq
+          }
+          this.socket.send(JSON.stringify(data));
+
           this.$cookies.remove('session_id');
           this.$cookies.remove('user');
           this.user = '';
@@ -357,6 +359,12 @@
           this.islogin = false
         },
         addfriends: function () {
+          let session_id = this.$cookies.get('session_id');
+          if (!session_id) {
+            alert('未登录');
+            return false;
+          }
+          this.current_qq ='';
           this.addfriendsshow = !this.addfriendsshow
         },
         // 添加好友操作
@@ -371,6 +379,10 @@
         },
         addtopanel: function (fr) {
 
+          // 隐藏其它面板
+          this.addfriendsshow = false;
+          this.loginshow = false;
+
           this.current_qq = fr.qq;
           // 如果有未读消息
           if (this.chat_unread[fr.qq]) {
@@ -383,33 +395,31 @@
           if (this.chatpanelqq.indexOf(fr.qq) === -1) {
             this.chatpanel.push(fr);
             this.chatpanelqq.push(fr.qq);
+
           }
+          // 判断是否添加 side bar
+          if (this.pannel_side_qq.indexOf(fr.qq) === -1) {
+            this.pannel_side.push(fr);
+            this.pannel_side_qq.push(fr.qq);
+          }
+
+          //
+          this.scrollToBottom();
+          this.$forceUpdate();
         },
         chatpanel_close: function (qq) {
           this.current_qq = false;
         },
         scrollToBottom() {
           this.$nextTick(() => {
-            var container = document.querySelector("#chatmessage");
+            //var container = document.querySelector("#abc"+this.current_qq);
+            let container = document.getElementById("abc"+this.current_qq);
+
             container.scrollTop = container.scrollHeight;
           })},
         switchpanel: function (tab) {
-          if (tab == 'group') {
-            this.groupshow = true;
-            this.friendsshow = false;
-            this.messageshow = false;
-            this.header_active = tab
-          } else if (tab == 'message') {
-            this.groupshow = false;
-            this.friendsshow = false;
-            this.messageshow = true;
-            this.header_active = tab
-          } else if (tab == 'friends') {
-            this.groupshow = false;
-            this.friendsshow = true;
-            this.messageshow = false;
-            this.header_active = tab
-          }
+          this.panelshow = tab;
+          this.header_active = tab;
         },
         dealUnread: function (data) {
           for (let i=0;i<data.length;i++) {
@@ -427,9 +437,7 @@
             datetime: '2019-01',
             nickname: this.friends[data.qq].nickname,
             message: data.message,
-            class: '',
-            class_face_item_right: 'chat-face-item-left',
-            class_chat_list_ul_li_right: 'chat-list-ul-li-left'
+            class: ''
           };
           let qq = this.$cookies.get('qq');
           if (!this.chatlist[data.qq]) {
@@ -452,18 +460,114 @@
           // 判断是否已经添加pannel
           if (this.chatpanelqq.indexOf('all') === -1) {
 
-            let alluser = {
+            var alluser = {
               qq: 'all',
-              nickname: 'webqq在线用户'
+              nickname: 'webqq在线用户',
+              avatar: 'group'
             };
 
             this.chatpanel.push(alluser);
             this.chatpanelqq.push('all');
           }
 
+          if (this.pannel_side_qq.indexOf('all') === -1) {
+            this.pannel_side.push(alluser)
+            this.pannel_side_qq.push('all')
+          }
+
           // 显示
           this.current_qq = 'all';
 
+          this.scrollToBottom();
+
+        },
+        addfriends_close: function () {
+          this.addfriendsshow = false;
+        },
+        handleChat: function (data) {
+          // 判断是否打开当前聊天窗口
+          if (this.current_qq != data.to_qq) {
+            if (!this.chat_unread[data.to_qq]) {
+              this.chat_unread[data.to_qq] = 0
+            }
+            this.chat_unread[data.to_qq]++;
+            // _this.unread_num++;
+          }
+          let img = '';
+          let nickname = ''
+          if (data.chat_type == 2) {
+            if (this.current_qq != 'all') {
+              this.online_unread ++;
+            }
+            img = '/static/img/' + data.userinfo.avatar + '.jpg';
+            nickname = data.userinfo.nickname;
+          } else  {
+            img =  '/static/img/' + this.friends[data.to_qq].avatar + '.jpg';
+            nickname = this.friends[data.to_qq].nickname;
+          }
+          let item = {
+            img: img,
+            datetime: data.datetime,
+            nickname: nickname,
+            message: data.msg,
+            class: '',
+            class_face_item_right: 'chat-face-item-right',
+            class_chat_list_ul_li_right: ''
+          };
+
+          if (!this.chatlist[data.to_qq]) {
+            this.chatlist[data.to_qq] = [];
+          }
+          this.chatlist[data.to_qq].push(item)
+          this.$forceUpdate();
+          if (this.current_qq) {
+            this.scrollToBottom();
+          }
+        },
+        handleLogin: function (data) {
+          this.$cookies.set('session_id', data.session_id, '0');
+          this.$cookies.set('user', data.user, '0');
+          this.nickname = data.user.nickname
+          this.loginshow = !this.loginshow;
+          this.islogin = false;
+          this.friends = data.friends;
+          this.avatar = '/static/img/' + data.user.avatar + '.jpg'
+          this.dealUnread(data.unread);
+          this.check_login();
+          this.$forceUpdate();
+        },
+        handleAddFriends: function (data) {
+          alert('添加成功');
+          // 关闭添加框
+          this.addfriendsshow = false;
+          // 重新刷新好友列表
+          this.friends = data.friends
+          this.$forceUpdate();
+        },
+        pannel_side_close: function (qq) {
+          for (let i=0; i<this.pannel_side.length; i++) {
+            let item = this.pannel_side[i];
+            if (item.qq == qq) {
+              // 删除
+              this.pannel_side.splice(i, 1);
+              // 删除
+              let index = this.pannel_side_qq.indexOf(qq);
+              this.pannel_side_qq.splice(index, 1);
+              if (qq == this.current_qq) {
+                this.current_qq = this.pannel_side_qq.pop();
+              }
+              break;
+            }
+          }
+        },
+        showclose: function (qq) {
+          this.panel_close_show = qq;
+        },
+        closeshow: function () {
+          this.panel_close_show = ''
+        },
+        switch_chat_side: function (qq) {
+          this.current_qq = qq;
         }
       },
       mounted() {
@@ -478,6 +582,17 @@
       },
       updated() {
         // this.scrollToBottom()
+      },
+      watch: {
+      },
+      directives: {
+        focus: {
+          update: function (el, {value}) {
+            if (value) {
+              el.focus()
+            }
+          }
+        }
       }
     }
 </script>
@@ -540,9 +655,14 @@
     height: 30px;
   }
   .chat-left ul li {
+    position: relative;
+    padding-left: 28px;
     height: 40px;
     line-height: 40px;
-    text-align: center;
+    text-align: left;
+  }
+  .chat-left ul li:hover {
+    background: #f5f5f5;
   }
 
   .conent-list ul li:hover {
@@ -634,7 +754,7 @@
   }
   .chat-panel {
     position: absolute;
-    right: 500px;
+    right: 360px;
     top: 50px;
     border: 1px solid gainsboro;
     border-radius: 3px;
@@ -647,11 +767,16 @@
     background: gainsboro;
   }
   .chat-list {
+    /*height:350px;*/
+    /*overflow-y:scroll;*/
+  }
+  .chatbox {
     width: auto;
     height: 350px;
     border-bottom: 1px solid gainsboro;
     overflow-y: scroll;
   }
+
  .chat-left {
    width: 150px;
    height: 500px;
@@ -722,8 +847,9 @@
     top: 66px;
     right: 500px;
     width: 300px;
-    height: 50px;
-    line-height: 50px;
+    text-align: center;
+    height: 80px;
+    line-height: 80px;
     border: 1px solid gainsboro;
   }
   .addfriends input {
@@ -762,5 +888,20 @@
   }
   .addfriends-button {
     cursor: pointer;
+  }
+  .pannel_side_list {
+    background: #f5f5f5;
+  }
+  .pannel-side-close {
+    color: white;
+    width: 20px;
+    height: 20px;
+    position: absolute; right: 1px;top: 10px;
+    background: url("/static/img/icon.png") no-repeat;
+    background-position:4px -40px;
+    cursor: pointer;
+  }
+  .pannel-side-close:hover{
+    color: red;
   }
 </style>
