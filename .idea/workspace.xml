@@ -1,81 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="acb7f6f7-cd53-450c-bb4e-d59ef82cc40e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.babelrc" beforeDir="false" afterPath="$PROJECT_DIR$/fronted/.babelrc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/fronted/.editorconfig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/fronted/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.postcssrc.js" beforeDir="false" afterPath="$PROJECT_DIR$/fronted/.postcssrc.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/build.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/check-versions.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/logo.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/utils.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/vue-loader.conf.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/webpack.base.conf.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/webpack.dev.conf.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/webpack.prod.conf.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/dev.env.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/index.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/prod.env.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/css/app.6449bbbc04121ef81fb9b3150df904da.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/css/app.6449bbbc04121ef81fb9b3150df904da.css.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/img/1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/img/1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/img/2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/img/3.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/img/4.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/img/5.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/img/6.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/img/7.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/img/guan.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/img/guanbi.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/img/icon.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/img/qq.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/img/qq_group.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/js/app.ee31755de60a4a264ea7.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/js/app.ee31755de60a4a264ea7.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/js/manifest.2ae2e69a05c33dfc65f8.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/js/manifest.2ae2e69a05c33dfc65f8.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/js/vendor.7dbd797e955ab6bb5eed.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/static/js/vendor.7dbd797e955ab6bb5eed.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg.mp3" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/assets/guanbi.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/assets/js/chatConfig.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/assets/js/handleMessage.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/assets/logo.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/assets/style/reset.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/HelloWorld.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Index.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Login.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Register.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/router/index.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/.gitkeep" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/audio/msg.mp3" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/audio/msg.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/3.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/4.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/5.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/6.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/7.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/8.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/group.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/guan.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/guanbi.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/icon.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/qq.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/qq_group.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.html" beforeDir="false" />
-    </list>
+    <list default="true" id="acb7f6f7-cd53-450c-bb4e-d59ef82cc40e" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -87,11 +13,23 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fronted/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="21">
               <caret line="1" column="13" selection-start-line="1" selection-start-column="13" selection-end-line="1" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="378">
+                <caret line="18" lean-forward="true" selection-start-line="18" selection-end-line="18" />
+              </first_editor>
+              <second_editor />
             </state>
           </provider>
         </entry>
@@ -260,12 +198,12 @@
       <workItem from="1548853009870" duration="585000" />
       <workItem from="1548854626288" duration="14967000" />
       <workItem from="1548916808612" duration="23627000" />
-      <workItem from="1548949574886" duration="10521000" />
+      <workItem from="1548949574886" duration="10827000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="251979000" />
+    <option name="totallyTimeSpent" value="252285000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="-11" width="1368" height="780" extended-state="6" />
@@ -482,16 +420,6 @@
     <entry file="file://$PROJECT_DIR$/static/img/qq.jpeg">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="378">
-            <caret line="18" lean-forward="true" selection-start-line="18" selection-end-line="18" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/components/Index.vue">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="7023">
@@ -512,6 +440,16 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="21">
           <caret line="1" column="13" selection-start-line="1" selection-start-column="13" selection-end-line="1" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="378">
+            <caret line="18" lean-forward="true" selection-start-line="18" selection-end-line="18" />
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
     </entry>
