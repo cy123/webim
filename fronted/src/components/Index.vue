@@ -325,6 +325,7 @@
         userlogin: function (data) {
           this.socket.send(JSON.stringify(data));
         },
+        //
         logout: function () {
           let data = {
             message_type: chatConfig.MESSAGE_TYPE_LOGOUT,
@@ -342,7 +343,9 @@
           this.current_qq = '';
           this.avatar = '/static/img/qq.jpeg';
           this.pannel_side_qq = [];
+          this.pannel_side = [];
           this.chatpanelqq = [];
+          this.chatpanel = [];
         },
         check_login() {
           let session_id = this.$cookies.get('session_id');
@@ -474,7 +477,8 @@
             this.chatpanel.push(alluser);
             this.chatpanelqq.push('all');
           }
-
+          console.log(this.pannel_side_qq);
+          console.log(this.chatpanel);
           if (this.pannel_side_qq.indexOf('all') === -1) {
             this.pannel_side.push(alluser)
             this.pannel_side_qq.push('all')
