@@ -1,5 +1,5 @@
 ## swoole+vue实现的web聊天
-#####在线演示 [catteacher](catteacher.cn)
+#####在线演示 [catteacher](http://catteacher.cn)
 ### 环境要求
 * PHP >= 7.0
 * Swoole4.2
