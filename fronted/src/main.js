@@ -6,14 +6,11 @@ import router from './router'
 import VueCookies from 'vue-cookies'
 
 import './assets/style/reset.css'
-
-import VueJsonp from 'vue-jsonp'
+import './assets/style/iconfont.css'
 
 Vue.config.productionTip = false
 Vue.use(VueCookies)
 
-
-Vue.use(VueJsonp)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

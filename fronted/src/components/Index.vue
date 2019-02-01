@@ -52,13 +52,12 @@
             <ul class="conent-list">
               <li class="friend qqgroup" @click="add_group_panel">
                 <img class="face" src="/static/img/group.jpg" alt="">
-                webqq在线用户
+                当前在线
                 <span style="color: #5fb878" >({{online_user_num}})</span>
                 <div class="friend_unread">{{online_unread}}</div>
               </li>
               <li v-for="group of groups"  class="friend qqgroup">
                 {{group.group_name}}
-
               </li>
             </ul>
           </div>
@@ -94,7 +93,7 @@
                      @click="pannel_side_close(item.qq)"
                      @click.stop
                 >
-
+                  <span class="iconfont">&#xe670;</span>
                 </div>
                 <img class="face" :src="'/static/img/'+item.avatar+'.jpg'" alt=""> {{item.nickname}}
               </li>
@@ -114,11 +113,23 @@
                       <i>{{item.nickname}}</i>
                     </cite>
                   </div>
-                  <div class="chat-list-text">
-                    {{item.message}}
+                  <div class="chat-list-text" v-html="item.message">
                   </div>
                 </li>
               </ul>
+            </div>
+            <div class="emoji-box" v-show="emoji_show">
+              <ul>
+                <li
+                  v-for="emoji of emojis"
+                  @click="emoji_select(user.qq, emoji)"
+                >
+                  <img :src="'/static/img/emoji/emoji'+ ' (' + emoji +').png'" alt="">
+                </li>
+              </ul>
+            </div>
+            <div class="tool_bar">
+              <span class="iconfont iconfont-emoji" @click="emojiclick">&#xe64e;</span>
             </div>
             <div class="chat-input">
               <textarea
@@ -182,7 +193,9 @@
           panel_close_show: '',
           pannel_side_qq: [],
           panel_small: false,
-          main_panel_show: true
+          main_panel_show: true,
+          emojis: [],
+          emoji_show: false
         }
 
       },
@@ -257,10 +270,12 @@
         send: function (qq, nickname) {
           //console.log(this.$refs.msgwav)
           // 没有消息直接返回
+          console.log(this.message);
           if(!this.message[qq]) {
             this.chatfocus= true;
             return;
           }
+          let imghtml = "<img src='/static/img/emoji/emoji (1).png'>";
           let user = this.$cookies.get('user');
           // 未登录，不发送消息
           if (!user) {
@@ -299,11 +314,15 @@
           this.scrollToBottom();
         },
         unlogin_send: function (qq) {
+          if (true){
+            let imghtml = "<img src='/static/img/emoji/emoji (1).png'>";
+            this.message[qq] = imghtml;
+          }
           let itme =   {
             img: '/static/img/qq.jpeg',
             datetime: '2019-10',
             nickname: '登录后聊天',
-            message: this.message,
+            message: this.message[qq],
             class: 'float-right',
             class_face_item_right: '',
             class_chat_list_ul_li_right: ''
@@ -469,7 +488,7 @@
           this.online_unread = ''
           let alluser = {
             qq: 'all',
-            nickname: 'webqq在线用户',
+            nickname: '当前在线',
             avatar: 'group'
           };
           // 判断是否已经添加pannel
@@ -582,6 +601,20 @@
         switch_main_panel: function () {
           this.main_panel_show = !this.main_panel_show;
           this.panel_small = !this.panel_small;
+        },
+        emojiclick: function () {
+          this.emoji_show = !this.emoji_show;
+        },
+        emoji_init:function () {
+          for (let i=1;i<=141;i++) {
+            this.emojis.push(i);
+          }
+        },
+        emoji_select: function (qq, emoji) {
+          // [emoji50]
+          this.emojiclick();
+          this.message[qq] = '[emoji'+emoji+']';
+          this.$forceUpdate();
         }
       },
       mounted() {
@@ -592,7 +625,8 @@
         if (this.$cookies.get('user')) {
           this.user = this.$cookies.get('user');
           this.avatar = '/static/img/' + this.user.avatar + '.jpg'
-        }
+        };
+        this.emoji_init();
       },
       updated() {
         // this.scrollToBottom()
@@ -803,10 +837,11 @@
     width: 100%;
     height: 100%;
     resize: none;
+    outline: none;
     padding-left: 10px;
     padding-top: 5px;
     box-sizing: border-box;
-    font-family:"Times New Roman",Georgia,Serif;
+    font-family: "Microsoft YaHei";
   }
   .to-message {
     position: absolute;
@@ -909,12 +944,12 @@
     background: #f5f5f5;
   }
   .pannel-side-close {
-    color: white;
-    width: 20px;
-    height: 20px;
-    position: absolute; right: 1px;top: 10px;
-    background: url("/static/img/icon.png") no-repeat;
-    background-position:4px -40px;
+    /*color: white;*/
+    width: 30px;
+    height: 30px;
+    line-height: 20px;
+    position: absolute;
+    right: -6px;top: 10px;
     cursor: pointer;
   }
   .pannel-side-close:hover{
@@ -928,5 +963,29 @@
   .main_panel_small img {
     width: 30px;
     height: 30px;
+  }
+  .tool_bar {
+    height: 21px;
+  }
+  .iconfont-emoji {
+    font-size: 22px;
+    cursor: pointer;
+  }
+  .emoji-box {
+    position: absolute;
+    bottom: 150px;
+    width: 300px;
+    height: 100px;
+    overflow-y: scroll;
+  }
+  .emoji-box ul li {
+    width: 26px;
+    height: 26px;
+    display: inline-block;
+    cursor: pointer;
+  }
+  .emoji-box li img {
+    width: 20px;
+    height: 20px;
   }
 </style>
