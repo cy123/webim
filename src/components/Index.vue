@@ -1,5 +1,6 @@
 <template>
     <div>
+
       <!--登录框-->
      <Login v-show="loginshow" @click="login" @userlogin = "userlogin" @register="register"></Login>
 
@@ -12,13 +13,17 @@
         <input v-model="friend_qq" type="text">
         <button @click="doaddfriend" style="cursor: pointer;">提交</button>
       </div>
+      <div v-show="panel_small" class="main_panel_small" @click="switch_main_panel">
+        <img src="/static/img/qq.jpeg" alt="">
+      </div>
 
+      <audio src="/static/audio/msg.mp3" ref="msgwav" id="msgwav"></audio>
       <!--主面板-->
-      <div class="contenier">
+      <div class="contenier" v-show="main_panel_show">
         <div class="header">
           <div v-if="islogin" @click="login" class="login-button">登录</div>
           <div @click="logout" v-if="islogout" class="login-button">退出</div>
-          <div class="close">
+          <div class="close" @click="switch_main_panel">
 
           </div>
           <div class="header-img">
@@ -66,7 +71,7 @@
           </div>
         </div>
         <div class="footer">
-          <div @click="addfriends" class="addfriends-button">添加好友</div>
+          <span @click="addfriends" class="addfriends-button">+</span>
         </div>
       </div>
 
@@ -148,8 +153,7 @@
         return {
           socket: '',
           friends: [],
-          chatlist: {
-          },
+          chatlist: [],
           chatpanel: [],
           chatpanelqq: [],
           message: [],
@@ -159,8 +163,6 @@
           logged: false,
           islogout: false,
           islogin: false,
-          userqq: '',
-          userpwd: '',
           friend_qq: '',
           nickname: '',
           avatar: '/static/img/qq.jpeg',
@@ -175,10 +177,12 @@
           user: {},
           groups: [],
           online_user_num: '', // 当前在线人数
-          chatfocus: true,
+          chatfocus: true, // 聊天输入聚焦
           pannel_side: [], // 聊天对话框左侧
           panel_close_show: '',
-          pannel_side_qq: []
+          pannel_side_qq: [],
+          panel_small: false,
+          main_panel_show: true
         }
 
       },
@@ -251,6 +255,7 @@
           }
         },
         send: function (qq, nickname) {
+          //console.log(this.$refs.msgwav)
           // 没有消息直接返回
           if(!this.message[qq]) {
             this.chatfocus= true;
@@ -336,6 +341,8 @@
           this.nickname = '';
           this.current_qq = '';
           this.avatar = '/static/img/qq.jpeg';
+          this.pannel_side_qq = [];
+          this.chatpanelqq = [];
         },
         check_login() {
           let session_id = this.$cookies.get('session_id');
@@ -457,15 +464,13 @@
         },
         add_group_panel: function () {
           this.online_unread = ''
+          let alluser = {
+            qq: 'all',
+            nickname: 'webqq在线用户',
+            avatar: 'group'
+          };
           // 判断是否已经添加pannel
           if (this.chatpanelqq.indexOf('all') === -1) {
-
-            var alluser = {
-              qq: 'all',
-              nickname: 'webqq在线用户',
-              avatar: 'group'
-            };
-
             this.chatpanel.push(alluser);
             this.chatpanelqq.push('all');
           }
@@ -485,6 +490,7 @@
           this.addfriendsshow = false;
         },
         handleChat: function (data) {
+          this.$refs.msgwav.play();
           // 判断是否打开当前聊天窗口
           if (this.current_qq != data.to_qq) {
             if (!this.chat_unread[data.to_qq]) {
@@ -568,6 +574,10 @@
         },
         switch_chat_side: function (qq) {
           this.current_qq = qq;
+        },
+        switch_main_panel: function () {
+          this.main_panel_show = !this.main_panel_show;
+          this.panel_small = !this.panel_small;
         }
       },
       mounted() {
@@ -582,8 +592,6 @@
       },
       updated() {
         // this.scrollToBottom()
-      },
-      watch: {
       },
       directives: {
         focus: {
@@ -808,12 +816,13 @@
     cursor: pointer;
   }
   .footer {
+    border-top: 1px solid gainsboro;
     position: absolute;
     bottom: 0;
     width: 100%;
     height: 20px;
     line-height: 20px;
-    background: #cacaca;
+    /*background: #cacaca;*/
   }
   .friend {
     position: relative;
@@ -888,6 +897,9 @@
   }
   .addfriends-button {
     cursor: pointer;
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 18px;
   }
   .pannel_side_list {
     background: #f5f5f5;
@@ -903,5 +915,14 @@
   }
   .pannel-side-close:hover{
     color: red;
+  }
+  .main_panel_small {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+  }
+  .main_panel_small img {
+    width: 30px;
+    height: 30px;
   }
 </style>
